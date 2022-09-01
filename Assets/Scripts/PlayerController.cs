@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour
     const int ANIMATION_CORRER = 2;
     const int ANIMATION_SALTAR = 3;
     const int ANIMATION_ATACAR = 4;
+    Vector3 lastCheckPointPosition;
+
+    int saltar = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -53,8 +56,13 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.Space) && puedeSaltar)
         {
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            puedeSaltar = false;
             ChangeAnimation(ANIMATION_SALTAR);
+            if (saltar > 2)
+            {
+                saltar++;
+                return;
+            }
+            puedeSaltar = false;
         }
         else if (Input.GetKey(KeyCode.Z))
         {
@@ -71,10 +79,23 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Puede Saltar");
         puedeSaltar = true;
+        saltar = 0;
         if (collision.gameObject.tag == "Enemy")
         {
             Debug.Log("Estas Muerto");
         }
+        if (collision.gameObject.tag == "DarkHole")
+        {
+            if (lastCheckPointPosition != null)
+            {
+                transform.position = lastCheckPointPosition;
+            }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Trigger");
     }
 
     private void ChangeAnimation(int animation)
